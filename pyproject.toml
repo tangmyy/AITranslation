@@ -1,0 +1,29 @@
+[project]
+name = "bigfy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9.0"
+dependencies = [
+  "PyQt5",
+  "requests",
+  "google_trans_new",
+  "pyperclip>=1.9.0",
+  "googletrans==4.0.0rc1",
+  "deep_translator",
+]
+
+[tool.uv]
+constraint-dependencies = ["pyqt5-qt5 <=5.15.2"]
+
+[[tool.uv.index]]
+url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+default = true
+
+[tool.uv.pip]
+index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.1",
+]
