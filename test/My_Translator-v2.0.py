@@ -1,10 +1,10 @@
 import threading
-from tkinter import *
-from tkinter import messagebox, ttk
+from tkinter import Tk, Text, Scrollbar, Menu, StringVar, Toplevel, messagebox, ttk
+from tkinter import END, LEFT, RIGHT, VERTICAL, HORIZONTAL
 from tkinter.filedialog import askopenfilename
 
 import pyperclip
-from Translator import Do_Trans
+from Translator import Do_Translator
 
 """
 使用combobox进行语言记录
@@ -29,12 +29,12 @@ class App:
     # 创建所有控件
     def create_widget(self):
         self.l1 = ttk.Label(self.window)
+        self.l2 = ttk.Label(self.window)
         self.t1 = Text(self.window)
+        self.t2 = Text(self.window)
         self.b1 = ttk.Button(self.window)
         self.b2 = ttk.Button(self.window)
         self.b3 = ttk.Button(self.window)
-        self.l2 = ttk.Label(self.window)
-        self.t2 = Text(self.window)
         self.Scroll_vertical1 = Scrollbar(self.window, orient=VERTICAL)
         self.Scroll_vertical2 = Scrollbar(self.window, orient=VERTICAL)
         self.Scroll_level = Scrollbar(self.window, orient=HORIZONTAL)
@@ -44,10 +44,10 @@ class App:
     # 配置控件属性与绑定事件
     def set_widget(self):
         self.l1.config(text="待翻译文本", font=("宋体", 10))
+        self.l2.config(text="翻译结果", font=("宋体", 10))
         self.b1.config(text="清空输入框", command=lambda: self.thread_it(self.clear_t))
         self.b2.config(text="翻译", command=lambda: self.thread_it(self.do_translate))
         self.b3.config(text="复制翻译内容", command=lambda: self.thread_it(self.copy_t))
-        self.l2.config(text="翻译结果", font=("宋体", 10))
         self.Scroll_vertical1.config(command=self.t1.yview)
         self.t1["yscrollcommand"] = self.Scroll_vertical1.set
         self.Scroll_vertical2.config(command=self.t2.yview)
@@ -98,6 +98,7 @@ class App:
         self.Scroll_vertical2.place(x=445, y=250, height=180)
         self.Scroll_level.place(x=10, y=430, width=450)
         self.l3.place(x=0, y=450, width=480, height=30)
+
     # 打开语言选择对话框
     def open_topleval(self):
         self.select_lan_window = Toplevel()
@@ -108,7 +109,9 @@ class App:
         self.select_lan_window.geometry("%dx%d+%d+%d" % (width, height, left, top))
         self.select_lan_window.resizable(0, 0)
         self.s_combobox_var = StringVar()
-        self.language_table = Do_Trans().get_language_table()
+        # 获取字典中的语言
+        self.language_table = Do_Translator().get_language_table()
+        
         self.s_combobox = ttk.Combobox(
             self.select_lan_window,
             textvariable=self.s_combobox_var,
@@ -149,16 +152,20 @@ class App:
             f.close()
     # 核心翻译逻辑
     def do_translate(self):
+        # 如果 now_lan 不存在 则抛出 AttributeError 令self.language = "auto"
         try:
             self.aim_language = self.now_lan
         except AttributeError:
             self.aim_language = self.language
+        # 删除t2 获取t1
         self.t2.delete("0.0", END)
         text = self.t1.get("0.0", END)
+
         if len(text) != 1:
             self.l3_var.set("正在翻译...")
-            t = Do_Trans()
-            result = t.translate(text, self.aim_language)
+            translator = Do_Translator()
+            result = translator.translate(text, self.aim_language)
+
             if result:
                 self.l3.config(background="lightblue")
                 self.t2.insert(END, result.strip())
@@ -166,7 +173,6 @@ class App:
                     self.l3_var.set(f"翻译完成...已翻译为[{self.now_language}]")
                 except AttributeError:
                     self.l3_var.set("翻译完成...已[自动选择目标语言]")
-
             else:
                 self.l3_var.set("翻译失败，请检查网络！")
                 self.l3.config(background="red")
@@ -174,6 +180,7 @@ class App:
             messagebox.showwarning("警告", "请输入内容！")
             self.l3.config(background="red")
             self.l3_var.set("请输入内容")
+
     # 弹出一个信息对话框，显示作者信息
     def show_infos(self):
         messagebox.showinfo("说明", "作者：懷淰メ")

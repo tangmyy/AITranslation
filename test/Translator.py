@@ -1,9 +1,10 @@
 import re
 
 from google_trans_new import google_translator
+from Baidu_Text_transAPI import BaiDu_transAPI
 
 
-class Do_Trans:
+class Do_Translator:
     # 从 lan_table 哈希MAP 中提取语言名称和代码，构造一个字典
     def get_language_table(self):
         lan_table1 = lan_table.strip().replace("'", "")
@@ -18,10 +19,11 @@ class Do_Trans:
         return language_table
     
     # 调用 google_trans_new 模块进行翻译
-    def translate(self, text, language):
+    def translate(self, text, to_lang):
         try:
-            tr = google_translator().translate(text, language)
-            return tr
+            # fy = google_translator().translate(text, language)
+            fy = BaiDu_transAPI().BaiDu_trans(text, to_lang)
+            return fy
         except Exception as e:
             print(f"出错了：{e}")
             return False
