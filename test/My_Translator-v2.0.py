@@ -10,7 +10,6 @@ from Translator import Do_Translator
 使用combobox进行语言记录
 """
 
-
 class App:
     def __init__(self):
         self.window = Tk()
@@ -66,21 +65,26 @@ class App:
         self.s1 = Menu(self.m, tearoff=False)
         self.s2 = Menu(self.m, tearoff=False)
         self.s3 = Menu(self.m, tearoff=False)
+        self.s4 = Menu(self.m, tearoff=False)
+        self.s5 = Menu(self.m, tearoff=False)
+        self.s6 = Menu(self.m, tearoff=False)
         # 添加菜单到主菜单栏
         self.m.add_cascade(label="文件", menu=self.s1)
         self.m.add_cascade(label="操作", menu=self.s2)
-        self.m.add_cascade(label="关于", menu=self.s3)
+        self.m.add_cascade(label="选择语言", command=self.open_topleval)
+        self.m.add_cascade(label="AI翻译", menu=self.s4)
+        self.m.add_cascade(label="AI对话", menu=self.s5)
+        self.m.add_cascade(label="关于", menu=self.s6)
         # “文件”菜单项配置
         self.s1.add_command(label="打开文本文件", command=self.open_txt)
         self.s1.add_separator()
         self.s1.add_command(label="退出", command=self.quit_window)
         # “操作”菜单项配置
-        self.s2.add_command(label="选择语言", command=self.open_topleval)
         self.s2.add_command(label="翻译", command=lambda: self.thread_it(self.do_translate))
         self.s2.add_command(label="清空内容", command=self.clear_t)
         self.s2.add_command(label="复制结果", command=lambda: self.thread_it(self.copy_t))
         # “关于”菜单项配置
-        self.s3.add_command(label="说明", command=self.show_infos)
+        self.s6.add_command(label="说明", command=self.show_infos)
         # 状态栏文字绑定变量
         self.l3_var = StringVar()
         self.l3.config(textvariable=self.l3_var, background="lightblue")
