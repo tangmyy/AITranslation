@@ -177,9 +177,9 @@ def checklen(text):
 
 if __name__ == '__main__':
     # 以下密钥信息从服务管控页面获取：https://console.xfyun.cn/services/bmx1
-    appid = "XXXXXXXX"  # 填写控制台中获取的 APPID 信息
-    api_secret = "XXXXXXXXXXXXXXXXXXXXXXXX"  # 填写控制台中获取的 APISecret 信息
-    api_key = "XXXXXXXXXXXXXXXXXXXXXXXX"  # 填写控制台中获取的 APIKey 信息
+    appid = "fda264df"  # 填写控制台中获取的 APPID 信息
+    api_secret = "NDhmZjY0YzFiYjhkYTM1NWUxYzIxNzM3"  # 填写控制台中获取的 APISecret 信息
+    api_key = "52c675637d3b3d2c959abd808ca1107c"  # 填写控制台中获取的 APIKey 信息
     domain = "x1"       #控制请求的模型版本
     # 服务地址
     Spark_url = "wss://spark-api.xf-yun.com/v1/x1"  #查看接口文档  https://www.xfyun.cn/doc/spark/X1ws.html

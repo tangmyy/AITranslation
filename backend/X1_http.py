@@ -3,7 +3,7 @@ import requests
 
 
 # 请替换XXXXXXXXXX为您的 APIpassword, 获取地址：https://console.xfyun.cn/services/bmx1
-api_key = "Bearer XXXXXXXXXXXXXXXX"
+api_key = "Bearer dBZCUkKLSTtRPJJInsLz:LamiMoiFwtIUplhZQRTc"
 url = "https://spark-api-open.xf-yun.com/v2/chat/completions"
 
 # 请求模型，并将结果输出

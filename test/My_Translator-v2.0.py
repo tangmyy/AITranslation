@@ -27,7 +27,20 @@ class App:
         self.place_widget()    # 控件布局（放置位置）
         self.language = "auto"  # 设置默认目标语言为自动检测
         self.window.mainloop()  # 启动主事件循环（显示窗口）
-    # 创建所有控件
+
+    # 普通翻译界面
+    def open_translate_ui(self):
+    # 清除窗口中除菜单栏外的所有控件
+        for widget in self.window.winfo_children():
+            if not isinstance(widget, Menu):
+                widget.destroy()
+        self.window.title("翻译器-v2.0")  # 恢复窗口标题
+        # 重新创建、设置、放置翻译界面的控件
+        self.create_widget()
+        self.set_widget()
+        self.place_widget()
+
+    # 创建普通翻译界面所有控件
     def create_widget(self):
         self.l1 = ttk.Label(self.window)  # 标签：用于显示“待翻译文本”
         self.l2 = ttk.Label(self.window)  # 标签：用于显示“翻译结果”
@@ -69,26 +82,27 @@ class App:
         self.s5 = Menu(self.m, tearoff=False)
         self.s6 = Menu(self.m, tearoff=False)
         # 添加菜单到主菜单栏
-        self.m.add_cascade(label="文件", menu=self.s1)
+        self.m.add_cascade(label="普通翻译", command=self.open_translate_ui)
         self.m.add_cascade(label="操作", menu=self.s2)
         self.m.add_cascade(label="选择语言", command=self.open_topleval)
         self.m.add_cascade(label="AI翻译", menu=self.s4)
-        self.m.add_cascade(label="AI对话", menu=self.s5)
+        self.m.add_cascade(label="AI对话", command=self.open_ai_chat_ui)
         self.m.add_cascade(label="关于", menu=self.s6)
-        # “文件”菜单项配置
-        self.s1.add_command(label="打开文本文件", command=self.open_txt)
-        self.s1.add_separator()
-        self.s1.add_command(label="退出", command=self.quit_window)
         # “操作”菜单项配置
+        self.s2.add_command(label="打开文本文件", command=self.open_txt)
+        self.s2.add_separator()
         self.s2.add_command(label="翻译", command=lambda: self.thread_it(self.do_translate))
         self.s2.add_command(label="清空内容", command=self.clear_t)
         self.s2.add_command(label="复制结果", command=lambda: self.thread_it(self.copy_t))
-        # “关于”菜单项配置
-        self.s6.add_command(label="说明", command=self.show_infos)
+        self.s2.add_separator()
+        self.s2.add_command(label="退出", command=self.quit_window)
         # 状态栏文字绑定变量
         self.l3_var = StringVar()
         self.l3.config(textvariable=self.l3_var, background="lightblue")
         self.l3_var.set("当前[自动选择]目标语言")
+        # “关于”菜单项配置
+        self.s6.add_command(label="说明", command=self.show_infos)
+
         # 绑定 ESC 快捷键用于退出
         self.window.bind("<Escape>", self.escape)
         # 输入框绑定回车快捷键触发翻译
@@ -121,11 +135,45 @@ class App:
         self.l3.place(x=0, y=450, width=480, height=30)  # 状态栏放底部横向占满
 
 
+    # AI对话界面
+    def open_ai_chat_ui(self):
+        # 清除窗口中除菜单栏以外的所有控件
+        for widget in self.window.winfo_children():
+            if not isinstance(widget, Menu):
+                widget.destroy()
+        self.window.title("翻译器-v2.0---AI对话")  # 更改窗口标题
+        # 聊天记录显示框（只读）
+        self.chat_answer = Text(self.window, state="disabled", wrap="word")
+        self.chat_answer.place(x=10, y=10, width=460, height=300)
+        # 滚动条
+        scroll_chat = Scrollbar(self.window, command=self.chat_answer.yview)
+        scroll_chat.place(x=470, y=10, height=300)
+        self.chat_answer.config(yscrollcommand=scroll_chat.set)
+        # 输入框
+        self.input_text = Text(self.window, height=4)
+        self.input_text.place(x=10, y=320, width=460, height=80)
+        # 发送按钮（功能占位）
+        send_button = ttk.Button(self.window, text="发送", command=self.fake_send)
+        send_button.place(x=370, y=410, width=100)
+        # 状态栏
+        self.chat_status = ttk.Label(self.window, text="AI对话已连接", background="lightgreen")
+        self.chat_status.place(x=0, y=450, width=480, height=30)
+    def fake_send(self):
+        user_ask = self.input_text.get("1.0", END).strip()
+        if user_ask:
+            # 解锁插入 → 插入消息 → 再锁定
+            self.chat_answer.config(state="normal")
+            self.chat_answer.insert(END, f"你：{user_ask}\n")
+            self.chat_answer.insert(END, "AI：对话功能暂未实现。\n\n")
+            self.chat_answer.see(END)
+            self.chat_answer.config(state="disabled")
+            self.input_text.delete("1.0", END)
+
+
     # 打开语言选择对话框
     def open_topleval(self):
         # 创建一个新的弹窗窗口（顶层窗口，独立于主窗口）
         self.select_lan_window = Toplevel()
-
         # 设置弹窗的宽度和高度
         width = 250
         height = 50
