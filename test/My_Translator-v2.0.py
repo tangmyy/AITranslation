@@ -5,10 +5,7 @@ from tkinter.filedialog import askopenfilename
 
 import pyperclip
 from Translator import Do_Translator
-
-"""
-使用combobox进行语言记录
-"""
+from Chat_AI import AIChatUI
 
 class App:
     def __init__(self):
@@ -109,11 +106,11 @@ class App:
         self.t1.bind('<Return>', lambda event: self.thread_it(self.do_translate))
         # 点击关闭窗口触发退出确认
         self.window.protocol("WM_DELETE_WINDOW", self.quit_window)
-        # 自定义右键菜单（输入框右键）
+        # 自定义输入框右键菜单
         self.menubar = Menu(self.t1, tearoff=False)
         self.menubar.add_command(label="粘贴", command=self.do_paste)
         self.t1.bind("<Button-3>", self.paste)
-        # 输出框右键菜单
+        # 自定义输出框右键菜单
         self.menubar2 = Menu(self.t2, tearoff=False)
         self.menubar2.add_command(label="粘贴", command=self.do_paste2)
         self.t2.bind("<Button-3>", self.paste2)
@@ -134,41 +131,9 @@ class App:
         self.Scroll_level.place(x=10, y=430, width=450)  # 输出框底部横向滚动条
         self.l3.place(x=0, y=450, width=480, height=30)  # 状态栏放底部横向占满
 
-
     # AI对话界面
     def open_ai_chat_ui(self):
-        # 清除窗口中除菜单栏以外的所有控件
-        for widget in self.window.winfo_children():
-            if not isinstance(widget, Menu):
-                widget.destroy()
-        self.window.title("翻译器-v2.0---AI对话")  # 更改窗口标题
-        # 聊天记录显示框（只读）
-        self.chat_answer = Text(self.window, state="disabled", wrap="word")
-        self.chat_answer.place(x=10, y=10, width=460, height=300)
-        # 滚动条
-        scroll_chat = Scrollbar(self.window, command=self.chat_answer.yview)
-        scroll_chat.place(x=470, y=10, height=300)
-        self.chat_answer.config(yscrollcommand=scroll_chat.set)
-        # 输入框
-        self.input_text = Text(self.window, height=4)
-        self.input_text.place(x=10, y=320, width=460, height=80)
-        # 发送按钮（功能占位）
-        send_button = ttk.Button(self.window, text="发送", command=self.fake_send)
-        send_button.place(x=370, y=410, width=100)
-        # 状态栏
-        self.chat_status = ttk.Label(self.window, text="AI对话已连接", background="lightgreen")
-        self.chat_status.place(x=0, y=450, width=480, height=30)
-    def fake_send(self):
-        user_ask = self.input_text.get("1.0", END).strip()
-        if user_ask:
-            # 解锁插入 → 插入消息 → 再锁定
-            self.chat_answer.config(state="normal")
-            self.chat_answer.insert(END, f"你：{user_ask}\n")
-            self.chat_answer.insert(END, "AI：对话功能暂未实现。\n\n")
-            self.chat_answer.see(END)
-            self.chat_answer.config(state="disabled")
-            self.input_text.delete("1.0", END)
-
+        AIChatUI(self.window)
 
     # 打开语言选择对话框
     def open_topleval(self):
@@ -214,7 +179,6 @@ class App:
         self.s_combobox.pack(side=LEFT)     # 将下拉框放置在窗口左侧
         self.s_b1.pack(side=RIGHT)          # 将“选择”按钮放置在窗口右侧
         self.select_lan_window.mainloop()   # 启动当前语言选择窗口的事件循环，使其保持响应
-
     # 记录当前选择的语言
     def select_lan(self):
         self.current_select = self.s_combobox.current()
@@ -223,17 +187,7 @@ class App:
         self.l3_var.set(f"选择[{self.now_language}]作为目标语言")
         self.now_lan = self.language_table[self.s_combobox.current()]["short"]
         self.select_lan_window.destroy()
-    # 导入 TXT 文本内容
-    def open_txt(self):
-        txt_path = askopenfilename(
-            title="选择一个txt文本文件", filetypes=[("txt source file", "*.txt")]
-        )
-        if txt_path:
-            self.t1.delete("0.0", END)
-            with open(txt_path, "r", encoding="utf-8") as f:
-                for line in f.readlines():
-                    self.t1.insert(END, line)
-            f.close()
+
     # 核心翻译逻辑
     def do_translate(self):
         # 如果 now_lan 不存在 则抛出 AttributeError 令self.language = "auto"
@@ -264,15 +218,23 @@ class App:
             messagebox.showwarning("警告", "请输入内容！")
             self.l3.config(background="red")
             self.l3_var.set("请输入内容")
-
-    # 弹出一个信息对话框，显示作者信息
-    def show_infos(self):
-        messagebox.showinfo("说明", "作者：懷淰メ")
     # 用线程封装某个函数的执行，避免操作卡住主界面
     def thread_it(self, func, *args):
         t = threading.Thread(target=func, args=args)
         t.setDaemon(True)
         t.start()
+
+    # 导入 TXT 文本内容
+    def open_txt(self):
+        txt_path = askopenfilename(
+            title="选择一个txt文本文件", filetypes=[("txt source file", "*.txt")]
+        )
+        if txt_path:
+            self.t1.delete("0.0", END)
+            with open(txt_path, "r", encoding="utf-8") as f:
+                for line in f.readlines():
+                    self.t1.insert(END, line)
+            f.close()
 
     # 清空输入框 t1 和输出框 t2
     def clear_t(self):
@@ -286,19 +248,18 @@ class App:
         if spam:
             self.l3.config(background="lightyellow")
             self.l3_var.set("复制成功！")
-    # 粘贴相关函数（右键菜单）
+
+    # 输入框和输出框粘贴功能
     def paste(self, event):
         self.menubar.post(event.x_root, event.y_root)
-    # 快捷退出绑定 按下 ESC 键调用 quit_window
-    def do_paste(self):
-        self.t1.insert(END, pyperclip.paste())
-    # 当用户在 右键点击输出框 t2 时，弹出自定义右键菜单 menubar2
     def paste2(self, event):
         self.menubar2.post(event.x_root, event.y_root)
-    # 这是 menubar2 右键菜单中的“粘贴”命令的回调函数
+    def do_paste(self):
+        self.t1.insert(END, pyperclip.paste())
     def do_paste2(self):
         self.t2.insert(END, pyperclip.paste())
-    # 绑定键盘上的 ESC 键按下事件
+
+    # 快捷退出绑定 按下 ESC 键调用 quit_window
     def escape(self, event):
         self.quit_window()
     # 退出提示
@@ -306,6 +267,9 @@ class App:
         ret = messagebox.askyesno("退出", "是否要退出？")
         if ret:
             self.window.destroy()
+    # 弹出一个信息对话框，显示作者信息
+    def show_infos(self):
+        messagebox.showinfo("说明", "作者：懷淰メ\n二创：脆脆鲨同学")
 
 if __name__ == "__main__":
     a = App()

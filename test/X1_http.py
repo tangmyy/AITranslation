@@ -1,8 +1,11 @@
+# backend.X1_http.py
+
 import json
 import requests
 
 
 # 请替换XXXXXXXXXX为您的 APIpassword, 获取地址：https://console.xfyun.cn/services/bmx1
+
 api_key = "Bearer dBZCUkKLSTtRPJJInsLz:LamiMoiFwtIUplhZQRTc"
 url = "https://spark-api-open.xf-yun.com/v2/chat/completions"
 
@@ -32,7 +35,7 @@ def get_answer(message):
     full_response = ""  # 存储返回结果
     isFirstContent = True  # 首帧标识
 
-    response = requests.post(url=url,json= body,headers= headers,stream= True)
+    response = requests.post(url=url,json=body, headers=headers, stream=True)
     # print(response)
     for chunks in response.iter_lines():
         # 打印返回的每帧内容
@@ -79,20 +82,5 @@ def checklen(text):
     while (getlength(text) > 11000):
         del text[0]
     return text
-
-
-#主程序入口
-if __name__ =='__main__':
-
-    #对话历史存储列表
-    chatHistory = []
-    #循环对话轮次
-    while (1):
-        # 等待控制台输入
-        Input = input("\n" + "我:")
-        question = checklen(getText(chatHistory,"user", Input))
-        # 开始输出模型内容
-        print("星火:", end="")
-        getText(chatHistory,"assistant", get_answer(question))
 
 

@@ -1,6 +1,5 @@
 import re
 
-from google_trans_new import google_translator
 from Baidu_Text_transAPI import BaiDu_transAPI
 
 
