@@ -37,25 +37,69 @@ class AIChatUI:
         self.chat_status = ttk.Label(self.window, text="AI对话已连接", background="lightgreen")
         self.chat_status.place(x=0, y=450, width=480, height=30) 
 
+    # def fake_send(self):
+    #     user_ask = self.input_text.get("1.0", END).strip()
+    #     # 解锁插入 → 插入消息 → 再锁定
+    #     if user_ask:
+    #         # 将聊天记录显示框解锁（normal:可编辑 disabled:不可编辑）
+    #         self.chat_answer.config(state="normal")
+
+    #         # 对话
+    #         # question = X1_http.checklen(X1_http.getText(chatHistory,"user", user_ask))
+    #         question = X1_http.checklen(X1_http.getText(self.chatHistory, "user", user_ask))    
+    #         answer = X1_http.get_answer(question)
+    #         # 向话历史存储列表中追加一条“AI的回复”
+    #         X1_http.getText(self.chatHistory, "assistant", answer)
+
+    #         self.chat_answer.insert(END, f"你：{user_ask}\n")
+    #         self.chat_answer.insert(END, f"AI：{answer}\n\n")
+    #         # 滚动聊天记录框到底部，使最新消息可见
+    #         self.chat_answer.see(END)
+    #         # 再次把聊天记录框设置为只读，防止用户手动编辑
+    #         self.chat_answer.config(state="disabled")
+    #         # 清空输入框内容，准备下一次提问
+    #         self.input_text.delete("1.0", END)
+
+
     def fake_send(self):
         user_ask = self.input_text.get("1.0", END).strip()
-        # 解锁插入 → 插入消息 → 再锁定
-        if user_ask:
-            # 将聊天记录显示框解锁（disabled 是不能编辑）
-            self.chat_answer.config(state="normal")
+        if not user_ask:
+            print("user_ask为空 不可发送!")
+            return
+        
+        # 将聊天记录显示框解锁（normal:可编辑 disabled:不可编辑）
+        self.chat_answer.config(state="normal")
+        self.chat_answer.insert(END, f"你：{user_ask}\n")
+        self.chat_answer.insert(END, f"AI：")
+        # 滚动聊天记录框到底部，使最新消息可见
+        self.chat_answer.see(END)
+        # 再次把聊天记录框设置为只读，防止用户手动编辑
+        self.chat_answer.config(state="disabled")
+        # 清空输入框内容，准备下一次提问
+        self.input_text.delete("1.0", END)
 
-            #对话
-            # question = X1_http.checklen(X1_http.getText(chatHistory,"user", user_ask))
-            question = X1_http.checklen(X1_http.getText(self.chatHistory, "user", user_ask))    
-            answer = X1_http.get_answer(question)
-            # 向话历史存储列表中追加一条“AI的回复”
-            X1_http.getText(self.chatHistory, "assistant", answer)
+        question = X1_http.checklen(X1_http.getText(self.chatHistory, "user", user_ask))    
 
-            self.chat_answer.insert(END, f"你：{user_ask}\n")
-            self.chat_answer.insert(END, f"AI：{answer}\n\n")
-            # 滚动聊天记录框到底部，使最新消息可见
+        # 开始流式请求并逐帧插入回答
+        self.chat_answer.config(state="normal")
+        answer = ""         # 存储返回结果
+        is_first_chunk = True   # 首帧标识
+        for chunk in X1_http.get_answer_stream(question):
+
+            # chunk = chunk.lstrip("\n")  # 去除 chunk 开头多余换行
+            if is_first_chunk:
+                chunk = chunk.lstrip("\n")  # 仅首帧去除模型多余的换行
+                is_first_chunk = False
+
+            self.chat_answer.insert(END, chunk)
             self.chat_answer.see(END)
-            # 再次把聊天记录框设置为只读，防止用户手动编辑
-            self.chat_answer.config(state="disabled")
-            # 清空输入框内容，准备下一次提问
-            self.input_text.delete("1.0", END)
+            self.window.update()  # 强制刷新 UI（关键）
+            answer += chunk
+        self.chat_answer.insert(END, "\n\n")  # 补换行
+        self.chat_answer.config(state="disabled")
+
+        # 向话历史存储列表中追加一条“AI的回复”
+        X1_http.getText(self.chatHistory, "assistant", answer)
+
+
+

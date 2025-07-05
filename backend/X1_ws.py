@@ -146,10 +146,7 @@ def main(appid, api_key, api_secret, Spark_url,domain, question):
     ws.domain = domain
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
-
-
 text = []
-
 
 # 管理对话历史，按序编为列表
 def getText(role, content):
