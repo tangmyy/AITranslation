@@ -218,6 +218,7 @@ class App:
             messagebox.showwarning("警告", "请输入内容！")
             self.l3.config(background="red")
             self.l3_var.set("请输入内容")
+            
     # 用线程封装某个函数的执行，避免操作卡住主界面
     def thread_it(self, func, *args):
         t = threading.Thread(target=func, args=args)
