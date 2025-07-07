@@ -89,20 +89,6 @@ class BirdMainWindow(QtWidgets.QMainWindow):
         self.search_line_edit.setText("")
         self.thumbnail_label.clear()
 
-    def on_click(self):
-        a, b = 0, 0
-        a = self.textbox_a.text()
-        b = self.textbox_b.text()
-        answer1 = int(a) + int(b)
-        answer2 = int(a) - int(b)
-        QtWidgets.QMessageBox.question(
-            self,
-            "Hahahaa",
-            f"Answer1:{answer1}, Answer2:{answer2}",
-            QtWidgets.QMessageBox.Ok,
-            QtWidgets.QMessageBox.Abort,
-        )
-
     # 异步执行视频下载 + 下载进度更新。
     async def download_1(self, url):
         bvid = self.parse_bv(url)
