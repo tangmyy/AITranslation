@@ -1,0 +1,17 @@
+QWidget {
+  font-size: 15px;
+  background:#FFFFFF
+}
+QLabel {
+  font-size: 15px;
+}
+QLineEdit {
+  font-size: 15px;
+}
+QPushButton {
+  color:red;
+}
+
+#textbox_a{
+  color: yellow;
+}
