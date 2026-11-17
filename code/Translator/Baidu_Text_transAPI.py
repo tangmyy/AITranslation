@@ -8,7 +8,9 @@
 import requests
 import random
 import json
+import os
 from hashlib import md5
+from dotenv import load_dotenv
 
 # q	string	是	请求翻译query	UTF-8编码，完成个人/企业认证后上限为6000字符
 # from	string	是	翻译源语言	可设置为auto（自动检测语言）
@@ -22,8 +24,11 @@ class BaiDu_transAPI:
 
     def BaiDu_trans(self, text, to_lang):
         # 请设置你自己的 appid 和 appkey（可在百度翻译开放平台申请）
-        appid = '20250703002396120'
-        appkey = 'mzCie6_X6SvEtmaLcx6_'
+        load_dotenv()
+        appid = os.getenv('BAIDU_APP_ID')
+        appkey = os.getenv('BAIDU_APP_KEY')
+        if not appid or not appkey:
+            raise RuntimeError('请在 .env 中配置 BAIDU_APP_ID 和 BAIDU_APP_KEY')
         from_lang = 'auto'  # 源语言：自动
 
         # 请求接口地址

@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['test\\My_Translator-v2.0.py'],
+    ['code\\Translator\\My_Translator-v2.0.py'],
     pathex=[],
     binaries=[],
     datas=[],

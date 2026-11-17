@@ -6,6 +6,8 @@ import hmac
 import json
 from urllib.parse import urlparse
 import ssl
+import os
+from dotenv import load_dotenv
 from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
@@ -173,10 +175,13 @@ def checklen(text):
 
 
 if __name__ == '__main__':
+    load_dotenv()
     # 以下密钥信息从服务管控页面获取：https://console.xfyun.cn/services/bmx1
-    appid = "fda264df"  # 填写控制台中获取的 APPID 信息
-    api_secret = "NDhmZjY0YzFiYjhkYTM1NWUxYzIxNzM3"  # 填写控制台中获取的 APISecret 信息
-    api_key = "52c675637d3b3d2c959abd808ca1107c"  # 填写控制台中获取的 APIKey 信息
+    appid = os.getenv("SPARK_WS_APP_ID")
+    api_secret = os.getenv("SPARK_WS_API_SECRET")
+    api_key = os.getenv("SPARK_WS_API_KEY")
+    if not all((appid, api_secret, api_key)):
+        raise RuntimeError("请在 .env 中配置 SPARK_WS_APP_ID、SPARK_WS_API_KEY 和 SPARK_WS_API_SECRET")
     domain = "x1"       #控制请求的模型版本
     # 服务地址
     Spark_url = "wss://spark-api.xf-yun.com/v1/x1"  #查看接口文档  https://www.xfyun.cn/doc/spark/X1ws.html

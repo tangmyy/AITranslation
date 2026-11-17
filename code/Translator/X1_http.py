@@ -2,18 +2,27 @@
 
 import json
 import requests
+import os
+from dotenv import load_dotenv
 
 
 # 请替换XXXXXXXXXX为您的 APIpassword, 获取地址：https://console.xfyun.cn/services/bmx1
 
-api_key = "Bearer dBZCUkKLSTtRPJJInsLz:LamiMoiFwtIUplhZQRTc"
+load_dotenv()
 url = "https://spark-api-open.xf-yun.com/v2/chat/completions"
+
+
+def authorization():
+    api_key = os.getenv("SPARK_API_KEY")
+    if not api_key:
+        raise RuntimeError("请在 .env 中配置 SPARK_API_KEY")
+    return api_key if api_key.startswith("Bearer ") else f"Bearer {api_key}"
 
 # 请求模型，并将结果输出
 def get_answer(message):
     # 设置 HTTP 请求头
     headers = {
-        'Authorization':api_key,
+        'Authorization':authorization(),
         'content-type': "application/json"
     }
     # 构造 POST 请求体
@@ -97,7 +106,7 @@ def checklen(text):
 
 def get_answer_stream(message):
     headers = {
-        'Authorization': api_key,
+        'Authorization': authorization(),
         'content-type': "application/json"
     }
     body = {

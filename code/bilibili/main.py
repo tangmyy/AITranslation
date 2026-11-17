@@ -147,7 +147,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("motif"))  # Fusion, Windows, WindowsVista
     app.setWindowIcon(QIcon(os.getenv("ICON_PATH")))
-    with open("code/bilibili/style.qss", "r") as f:
+    with open("code/Bilibili/style.qss", "r") as f:
         _style = f.read()
         app.setStyleSheet(_style)
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())  # qdarkstyle
